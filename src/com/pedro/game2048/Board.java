@@ -52,4 +52,49 @@ public class Board {
 
     }
 
+    public boolean moveLeft(){
+        boolean moved = false;
+
+        for(int row = 0; row < SIZE; row++){
+            int[] currentRow = grid[row];
+            int[] newRow = new int[SIZE];
+            int pos = 0;
+
+            for(int i = 0; i < SIZE; i++){
+                if(currentRow[i] != 0){
+                    newRow[pos++] = currentRow[i];
+                }
+            }
+
+            for(int i = 0; i < SIZE - 1; i++){
+                if (newRow[i] != 0 && newRow[i] == newRow[i + 1]) {
+                    newRow[i] *= 2;
+                    newRow[i + 1] = 0;
+                    moved = true;
+                }
+            }
+
+            int[] finalRow = new int[SIZE];
+            pos = 0;
+            for(int i = 0; i < SIZE; i++){
+                if(newRow[i] != 0){
+                    finalRow[pos++] = newRow[i];
+                }
+            }
+
+            for(int i = 0; i < SIZE; i++){
+                if(grid[row][i] != finalRow[i]) {
+                    moved = true;
+                }
+                grid[row][i] = finalRow[i];
+            }
+        }
+
+        if (moved) {
+            spawnTile();
+        }
+
+        return moved;
+    }
+
 }
