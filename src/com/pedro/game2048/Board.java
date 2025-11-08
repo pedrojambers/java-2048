@@ -37,10 +37,10 @@ public class Board {
     public void printBoard() {
         String horizontalLine = "+----+----+----+----+";
 
-        for (int row = 0; row < SIZE; row++){
+        for (int row = 0; row < SIZE; row++) {
             System.out.println(horizontalLine);
-            for(int col = 0; col < SIZE; col++){
-                if (grid[row][col] == 0){
+            for (int col = 0; col < SIZE; col++) {
+                if (grid[row][col] == 0) {
                     System.out.print("|    ");
                 } else {
                     System.out.printf("|%4d", grid[row][col]);
@@ -52,21 +52,21 @@ public class Board {
 
     }
 
-    public boolean moveLeft(){
+    public boolean moveLeft() {
         boolean moved = false;
 
-        for(int row = 0; row < SIZE; row++){
+        for (int row = 0; row < SIZE; row++) {
             int[] currentRow = grid[row];
             int[] newRow = new int[SIZE];
             int pos = 0;
 
-            for(int i = 0; i < SIZE; i++){
-                if(currentRow[i] != 0){
+            for (int i = 0; i < SIZE; i++) {
+                if (currentRow[i] != 0) {
                     newRow[pos++] = currentRow[i];
                 }
             }
 
-            for(int i = 0; i < SIZE - 1; i++){
+            for (int i = 0; i < SIZE - 1; i++) {
                 if (newRow[i] != 0 && newRow[i] == newRow[i + 1]) {
                     newRow[i] *= 2;
                     newRow[i + 1] = 0;
@@ -76,17 +76,167 @@ public class Board {
 
             int[] finalRow = new int[SIZE];
             pos = 0;
-            for(int i = 0; i < SIZE; i++){
-                if(newRow[i] != 0){
+            for (int i = 0; i < SIZE; i++) {
+                if (newRow[i] != 0) {
                     finalRow[pos++] = newRow[i];
                 }
             }
 
-            for(int i = 0; i < SIZE; i++){
-                if(grid[row][i] != finalRow[i]) {
+            for (int i = 0; i < SIZE; i++) {
+                if (grid[row][i] != finalRow[i]) {
                     moved = true;
                 }
                 grid[row][i] = finalRow[i];
+            }
+        }
+
+        if (moved) {
+            spawnTile();
+        }
+
+        return moved;
+    }
+
+    public boolean moveRight() {
+        boolean moved = false;
+
+        for (int row = 0; row < SIZE; row++) {
+            int[] currentRow = grid[row];
+            int[] reversedRow = new int[SIZE];
+
+            for (int i = 0; i < SIZE; i++) {
+                reversedRow[i] = currentRow[SIZE - 1 - i];
+            }
+
+            int[] newRow = new int[SIZE];
+            int pos = 0;
+
+            for (int i = 0; i < SIZE; i++) {
+                if (reversedRow[i] != 0) {
+                    newRow[pos++] = reversedRow[i];
+                }
+            }
+
+            for (int i = 0; i < SIZE - 1; i++) {
+                if (newRow[i] != 0 && newRow[i] == newRow[i + 1]) {
+                    newRow[i] *= 2;
+                    newRow[i + 1] = 0;
+                    moved = true;
+                }
+            }
+            int[] finalRow = new int[SIZE];
+            pos = 0;
+            for (int i = 0; i < SIZE; i++) {
+                if (newRow[i] != 0) {
+                    finalRow[pos++] = newRow[i];
+                }
+            }
+
+            for (int i = 0; i < SIZE; i++) {
+                int newValue = finalRow[SIZE - 1 - i];
+                if (grid[row][i] != newValue) {
+                    moved = true;
+                }
+                grid[row][i] = newValue;
+            }
+        }
+
+        if (moved) {
+            spawnTile();
+        }
+
+        return moved;
+    }
+
+    public boolean moveUp() {
+        boolean moved = false;
+
+        for (int col = 0; col < SIZE; col++) {
+            int[] column = new int[SIZE];
+            for (int row = 0; row < SIZE; row++) {
+                column[row] = grid[row][col];
+            }
+
+            int[] newColumn = new int[SIZE];
+            int pos = 0;
+
+            for (int i = 0; i < SIZE; i++) {
+                if (column[i] != 0) {
+                    newColumn[pos++] = column[i];
+                }
+            }
+
+            for (int i = 0; i < SIZE - 1; i++) {
+                if (newColumn[i] != 0 && newColumn[i] == newColumn[i + 1]) {
+                    newColumn[i] *= 2;
+                    newColumn[i + 1] = 0;
+                    moved = true;
+                }
+            }
+
+            int[] finalColumn = new int[SIZE];
+            pos = 0;
+            for (int i = 0; i < SIZE; i++) {
+                if (newColumn[i] != 0) {
+                    finalColumn[pos++] = newColumn[i];
+                }
+            }
+
+            for (int row = 0; row < SIZE; row++) {
+                if (grid[row][col] != finalColumn[row]) {
+                    moved = true;
+                }
+                grid[row][col] = finalColumn[row];
+            }
+        }
+
+        if (moved) {
+            spawnTile();
+        }
+
+        return moved;
+    }
+
+    public boolean moveDown() {
+        boolean moved = false;
+
+        for (int col = 0; col < SIZE; col++) {
+            int[] column = new int[SIZE];
+            for (int row = 0; row < SIZE; row++) {
+                column[row] = grid[SIZE - 1 - row][col];
+            }
+
+            int[] newColumn = new int[SIZE];
+            int pos = 0;
+
+            for (int i = 0; i < SIZE; i++) {
+                if (column[i] != 0) {
+                    newColumn[pos++] = column[i];
+                }
+            }
+
+            for (int i = 0; i < SIZE - 1; i++) {
+                if (newColumn[i] != 0 && newColumn[i] == newColumn[i + 1]) {
+                    newColumn[i] *= 2;
+                    newColumn[i + 1] = 0;
+                    moved = true;
+                }
+            }
+
+            int[] finalColumn = new int[SIZE];
+            pos = 0;
+            for (int i = 0; i < SIZE; i++) {
+                if (newColumn[i] != 0) {
+                    finalColumn[pos++] = newColumn[i];
+                }
+            }
+
+            for (int row = 0; row < SIZE; row++) {
+                int newValue = finalColumn[SIZE - 1 - row];
+                if (grid[row][col] != newValue) {
+                    moved = true;
+                }
+                grid[row][col] = newValue;
             }
         }
 
