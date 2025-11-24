@@ -8,9 +8,11 @@ public class Board {
     private final int SIZE = 4;
     private final int[][] grid;
     private final Random random;
+    private int score;
 
     public Board() {
         grid = new int[SIZE][SIZE];
+        score = 0;
         random = new Random();
         spawnTile();
         spawnTile();
@@ -35,6 +37,7 @@ public class Board {
     }
 
     public void printBoard() {
+        System.out.println("\nScore: " + score);
         String horizontalLine = "+----+----+----+----+";
 
         for (int row = 0; row < SIZE; row++) {
@@ -71,6 +74,7 @@ public class Board {
                     newRow[i] *= 2;
                     newRow[i + 1] = 0;
                     moved = true;
+                    score += newRow[i];
                 }
             }
 
@@ -122,6 +126,7 @@ public class Board {
                     newRow[i] *= 2;
                     newRow[i + 1] = 0;
                     moved = true;
+                    score += newRow[i];
                 }
             }
             int[] finalRow = new int[SIZE];
@@ -171,6 +176,7 @@ public class Board {
                     newColumn[i] *= 2;
                     newColumn[i + 1] = 0;
                     moved = true;
+                    score += newColumn[i];
                 }
             }
 
@@ -220,6 +226,7 @@ public class Board {
                     newColumn[i] *= 2;
                     newColumn[i + 1] = 0;
                     moved = true;
+                    score += newColumn[i];
                 }
             }
 
@@ -245,6 +252,49 @@ public class Board {
         }
 
         return moved;
+    }
+
+    public int getScore(){
+        return score;
+    }
+
+    public boolean hasWon(){
+        for (int row = 0; row < SIZE; row++){
+            for (int col = 0; col < SIZE; col++){
+                if (grid[row][col] == 2048) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean canMove(){
+        for (int row = 0; row < SIZE; row++){
+            for (int col = 0; col < SIZE; col++){
+                if (grid[row][col] == 0){
+                    return true;
+                }
+            }
+        }
+
+        for (int row = 0; row < SIZE; row++){
+            for (int col = 0; col < SIZE - 1; col++){
+                if (grid[row][col] == grid[row][col + 1]){
+                    return true;
+                }
+            }
+        }
+
+        for (int col = 0; col < SIZE - 1; col++){
+            for (int row = 0; row < SIZE - 1; row++){
+                if (grid[row][col] == grid[row + 1][col]){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 }

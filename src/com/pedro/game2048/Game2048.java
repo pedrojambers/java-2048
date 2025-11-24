@@ -32,6 +32,39 @@ public class Game2048 {
                 System.out.println("Invalid input. Use W/A/S/D to move or Q to quit.");
             }
 
+            if (moved) {
+                board.printBoard();
+                if (board.hasWon()) {
+                    System.out.println("You reached 2048! You win!");
+                    System.out.println("Do you want to keep playing? (Y/N): ");
+                    String choice = scanner.next().toUpperCase();
+
+                    if (!choice.equals("Y")) {
+                        System.out.println("Thanks for playing!");
+                        break;
+                    } else {
+                        board = new Board();
+                        continue;
+                    }
+                }
+
+                if (!board.canMove()) {
+                    board.printBoard();
+                    System.out.println("No moves left! Game Over!");
+
+                    System.out.println("Play again? (Y/N): ");
+                    String again = scanner.next().toUpperCase();
+
+                    if (!again.equals("Y")) {
+                        System.out.println("Thanks for playing!");
+                        break;
+                    } else {
+                        board = new Board();
+                        continue;
+                    }
+                }
+            }
+
             if (!moved) {
                 System.out.println("No tiles moved");
             }
