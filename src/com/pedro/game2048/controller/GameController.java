@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
+
 public class GameController {
     private final Stage stage;
     private Board board;
@@ -25,13 +26,18 @@ public class GameController {
         scene.setOnKeyPressed(ev -> {
             KeyCode code = ev.getCode();
             boolean moved = false;
+
             if (code == KeyCode.LEFT || code == KeyCode.A) moved = board.moveLeft();
             else if (code == KeyCode.RIGHT || code == KeyCode.D) moved = board.moveRight();
             else if (code == KeyCode.UP || code == KeyCode.W) moved = board.moveUp();
             else if (code == KeyCode.DOWN || code == KeyCode.S) moved = board.moveDown();
 
             if (moved) {
-                view.update(board);
+                view.animateMoves(board.getLastMoves(), () -> {
+                    view.update(board);
+                    checkEndConditions();
+                });
+
                 checkEndConditions();
             }
         });

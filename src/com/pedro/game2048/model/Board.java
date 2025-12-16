@@ -5,31 +5,41 @@ import java.util.List;
 import java.util.Random;
 
 public class Board {
-    private final int SIZE = 4;
-    private final int[][] grid;
-    private final Random random;
-    private int score;
+
+    public static final int SIZE = 4;
+
+    private final Tile[][] grid = new Tile[SIZE][SIZE];
+    private final Random random = new Random();
+    private int score = 0;
+
+    public static class Move {
+        public final Tile tile;
+        public final int fromR, fromC;
+        public final int toR, toC;
+
+        public Move(Tile tile, int fromR, int fromC, int toR, int toC) {
+            this.tile = tile;
+            this.fromR = fromR;
+            this.fromC = fromC;
+            this.toR = toR;
+            this.toC = toC;
+        }
+    }
+
+    private final List<Move> lastMoves = new ArrayList<>();
+
+    public List<Move> getLastMoves() {
+        return lastMoves;
+    }
 
     public Board() {
-        grid = new int[SIZE][SIZE];
-        random = new Random();
-        score = 0;
         spawnTile();
         spawnTile();
+
     }
 
-    public int getSize() {
-        return SIZE;
-    }
-
-    public int getTile(int row, int col) {
-        return grid[row][col];
-    }
-
-    public int[][] getGridCopy() {
-        int[][] copy = new int[SIZE][SIZE];
-        for (int r = 0; r < SIZE; r++) System.arraycopy(grid[r], 0, copy[r], 0, SIZE);
-        return copy;
+    public Tile getTile(int r, int c) {
+        return grid[r][c];
     }
 
     public int getScore() {
@@ -40,158 +50,117 @@ public class Board {
         List<int[]> empty = new ArrayList<>();
         for (int r = 0; r < SIZE; r++)
             for (int c = 0; c < SIZE; c++)
-                if (grid[r][c] == 0) empty.add(new int[]{r, c});
+                if (grid[r][c] == null)
+                    empty.add(new int[]{r, c});
+
         if (empty.isEmpty()) return;
-        int[] cell = empty.get(random.nextInt(empty.size()));
-        grid[cell[0]][cell[1]] = random.nextDouble() < 0.9 ? 2 : 4;
+
+        int[] pos = empty.get(random.nextInt(empty.size()));
+        grid[pos[0]][pos[1]] = new Tile(random.nextDouble() < 0.9 ? 2 : 4);
     }
 
-    public boolean moveLeft() {
+    private boolean move(int dr, int dc) {
+        lastMoves.clear();
         boolean moved = false;
-        for (int row = 0; row < SIZE; row++) {
-            int[] current = grid[row];
-            int[] newRow = new int[SIZE];
-            int pos = 0;
-            for (int i = 0; i < SIZE; i++) if (current[i] != 0) newRow[pos++] = current[i];
 
-            for (int i = 0; i < SIZE - 1; i++) {
-                if (newRow[i] != 0 && newRow[i] == newRow[i + 1]) {
-                    newRow[i] *= 2;
-                    score += newRow[i];
-                    newRow[i + 1] = 0;
+        int startR = dr > 0 ? SIZE - 1 : 0;
+        int startC = dc > 0 ? SIZE - 1 : 0;
+        int endR   = dr > 0 ? -1 : SIZE;
+        int endC   = dc > 0 ? -1 : SIZE;
+
+        boolean[][] merged = new boolean[SIZE][SIZE];
+
+        for (int r = startR; r != endR; r -= dr == 0 ? -1 : dr) {
+            for (int c = startC; c != endC; c -= dc == 0 ? -1 : dc) {
+
+                boolean mergedThisTile = false;
+
+                Tile tile = grid[r][c];
+                if (tile == null) continue;
+
+                int nr = r, nc = c;
+
+                while (true) {
+                    int tr = nr + dr;
+                    int tc = nc + dc;
+
+                    if (tr < 0 || tr >= SIZE || tc < 0 || tc >= SIZE)
+                        break;
+
+                    if (grid[tr][tc] == null) {
+                        nr = tr;
+                        nc = tc;
+                    }
+                    else if (!merged[tr][tc] &&
+                            grid[tr][tc].getValue() == tile.getValue()) {
+
+                        grid[tr][tc].setValue(tile.getValue() * 2);
+                        score += grid[tr][tc].getValue();
+                        merged[tr][tc] = true;
+
+                        lastMoves.add(new Move(tile, r, c, tr, tc));
+
+                        grid[r][c] = null;
+                        mergedThisTile = true;
+                        moved = true;
+                        break;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                if (!mergedThisTile && (nr != r || nc != c)) {
+                    lastMoves.add(new Move(tile, r, c, nr, nc));
+                    grid[nr][nc] = tile;
+                    grid[r][c] = null;
                     moved = true;
                 }
             }
-
-            int[] finalRow = new int[SIZE];
-            pos = 0;
-            for (int i = 0; i < SIZE; i++) if (newRow[i] != 0) finalRow[pos++] = newRow[i];
-
-            for (int i = 0; i < SIZE; i++) {
-                if (grid[row][i] != finalRow[i]) moved = true;
-                grid[row][i] = finalRow[i];
-            }
         }
+
         if (moved) spawnTile();
         return moved;
     }
 
-    public boolean moveRight() {
-        boolean moved = false;
-        for (int row = 0; row < SIZE; row++) {
-            int[] cur = grid[row];
-            int[] rev = new int[SIZE];
-            for (int i = 0; i < SIZE; i++) rev[i] = cur[SIZE - 1 - i];
-
-            int[] newRow = new int[SIZE];
-            int pos = 0;
-            for (int i = 0; i < SIZE; i++) if (rev[i] != 0) newRow[pos++] = rev[i];
-
-            for (int i = 0; i < SIZE - 1; i++) {
-                if (newRow[i] != 0 && newRow[i] == newRow[i + 1]) {
-                    newRow[i] *= 2;
-                    score += newRow[i];
-                    newRow[i + 1] = 0;
-                    moved = true;
-                }
-            }
-
-            int[] finalRow = new int[SIZE];
-            pos = 0;
-            for (int i = 0; i < SIZE; i++) if (newRow[i] != 0) finalRow[pos++] = newRow[i];
-
-            for (int i = 0; i < SIZE; i++) {
-                int val = finalRow[SIZE - 1 - i];
-                if (grid[row][i] != val) moved = true;
-                grid[row][i] = val;
-            }
-        }
-        if (moved) spawnTile();
-        return moved;
-    }
-
-    public boolean moveUp() {
-        boolean moved = false;
-        for (int col = 0; col < SIZE; col++) {
-            int[] column = new int[SIZE];
-            for (int r = 0; r < SIZE; r++) column[r] = grid[r][col];
-
-            int[] newCol = new int[SIZE];
-            int pos = 0;
-            for (int i = 0; i < SIZE; i++) if (column[i] != 0) newCol[pos++] = column[i];
-
-            for (int i = 0; i < SIZE - 1; i++) {
-                if (newCol[i] != 0 && newCol[i] == newCol[i + 1]) {
-                    newCol[i] *= 2;
-                    score += newCol[i];
-                    newCol[i + 1] = 0;
-                    moved = true;
-                }
-            }
-
-            int[] finalCol = new int[SIZE];
-            pos = 0;
-            for (int i = 0; i < SIZE; i++) if (newCol[i] != 0) finalCol[pos++] = newCol[i];
-
-            for (int r = 0; r < SIZE; r++) {
-                if (grid[r][col] != finalCol[r]) moved = true;
-                grid[r][col] = finalCol[r];
-            }
-        }
-        if (moved) spawnTile();
-        return moved;
-    }
-
-    public boolean moveDown() {
-        boolean moved = false;
-        for (int col = 0; col < SIZE; col++) {
-            int[] column = new int[SIZE];
-            for (int r = 0; r < SIZE; r++) column[r] = grid[SIZE - 1 - r][col];
-
-            int[] newCol = new int[SIZE];
-            int pos = 0;
-            for (int i = 0; i < SIZE; i++) if (column[i] != 0) newCol[pos++] = column[i];
-
-            for (int i = 0; i < SIZE - 1; i++) {
-                if (newCol[i] != 0 && newCol[i] == newCol[i + 1]) {
-                    newCol[i] *= 2;
-                    score += newCol[i];
-                    newCol[i + 1] = 0;
-                    moved = true;
-                }
-            }
-
-            int[] finalCol = new int[SIZE];
-            pos = 0;
-            for (int i = 0; i < SIZE; i++) if (newCol[i] != 0) finalCol[pos++] = newCol[i];
-
-            for (int r = 0; r < SIZE; r++) {
-                int val = finalCol[SIZE - 1 - r];
-                if (grid[r][col] != val) moved = true;
-                grid[r][col] = val;
-            }
-        }
-        if (moved) spawnTile();
-        return moved;
-    }
+    public boolean moveLeft()  { return move(0, -1); }
+    public boolean moveRight() { return move(0,  1); }
+    public boolean moveUp()    { return move(-1, 0); }
+    public boolean moveDown()  { return move(1,  0); }
 
     public boolean canMove() {
-        for (int r = 0; r < SIZE; r++) for (int c = 0; c < SIZE; c++) if (grid[r][c] == 0) return true;
-        for (int r = 0; r < SIZE; r++) for (int c = 0; c < SIZE - 1; c++) if (grid[r][c] == grid[r][c + 1]) return true;
-        for (int c = 0; c < SIZE; c++) for (int r = 0; r < SIZE - 1; r++) if (grid[r][c] == grid[r + 1][c]) return true;
+        for (int r = 0; r < SIZE; r++)
+            for (int c = 0; c < SIZE; c++)
+                if (grid[r][c] == null) return true;
+
+        for (int r = 0; r < SIZE; r++)
+            for (int c = 0; c < SIZE - 1; c++)
+                if (grid[r][c].getValue() == grid[r][c + 1].getValue())
+                    return true;
+
+        for (int c = 0; c < SIZE; c++)
+            for (int r = 0; r < SIZE - 1; r++)
+                if (grid[r][c].getValue() == grid[r + 1][c].getValue())
+                    return true;
+
         return false;
     }
 
     public boolean hasWon() {
-        for (int r = 0; r < SIZE; r++) for (int c = 0; c < SIZE; c++) if (grid[r][c] == 2048) return true;
+        for (int r = 0; r < SIZE; r++)
+            for (int c = 0; c < SIZE; c++)
+                if (grid[r][c] != null && grid[r][c].getValue() == 2048)
+                    return true;
         return false;
     }
 
     public void reset() {
-        for (int r = 0; r < SIZE; r++) for (int c = 0; c < SIZE; c++) grid[r][c] = 0;
+        for (int r = 0; r < SIZE; r++)
+            for (int c = 0; c < SIZE; c++)
+                grid[r][c] = null;
+
         score = 0;
         spawnTile();
         spawnTile();
     }
-
 }

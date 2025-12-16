@@ -1,0 +1,18 @@
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "System";
+    -fx-background-color: #faf8ef; /* light page background */
+}
+
+.grid-pane {
+    -fx-padding: 18; /* padding around the board */
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+}
+
+.tile-bg {
+    /* kept for compatibility if you still use it */
+}
+
+.label {
+    -fx-font-weight: bold;
+}
