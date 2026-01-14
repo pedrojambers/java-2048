@@ -35,6 +35,7 @@ public class GameView {
     private final Pane tileLayer = new Pane();
 
     private final Map<Integer, TileView> tileViews = new HashMap<>();
+    private final GameOverlayView overlay = new GameOverlayView();
 
     public GameView() {
         Rectangle boardBg = new Rectangle(BOARD_SIZE, BOARD_SIZE);
@@ -47,7 +48,7 @@ public class GameView {
 
         StackPane.setAlignment(tileLayer, Pos.CENTER);
 
-        boardContainer.getChildren().addAll(boardBg, tileLayer);
+        boardContainer.getChildren().addAll(boardBg, tileLayer, overlay);
         boardContainer.setAlignment(Pos.CENTER);
     }
 
@@ -180,4 +181,17 @@ public class GameView {
     public Button getRestartButton() {
         return restartButton;
     }
+
+    public void showGameOver(int score) {
+        overlay.showGameOver(score);
+    }
+
+    public void showWin(int score) {
+        overlay.showWin(score);
+    }
+
+    public GameOverlayView getOverlay() {
+        return overlay;
+    }
+
 }

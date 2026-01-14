@@ -11,6 +11,7 @@ public class Board {
     private final Tile[][] grid = new Tile[SIZE][SIZE];
     private final Random random = new Random();
     private int score = 0;
+    private boolean winReached = false;
 
     public static class Move {
         public final Tile tile;
@@ -65,8 +66,8 @@ public class Board {
 
         int startR = dr > 0 ? SIZE - 1 : 0;
         int startC = dc > 0 ? SIZE - 1 : 0;
-        int endR   = dr > 0 ? -1 : SIZE;
-        int endC   = dc > 0 ? -1 : SIZE;
+        int endR = dr > 0 ? -1 : SIZE;
+        int endC = dc > 0 ? -1 : SIZE;
 
         boolean[][] merged = new boolean[SIZE][SIZE];
 
@@ -90,8 +91,7 @@ public class Board {
                     if (grid[tr][tc] == null) {
                         nr = tr;
                         nc = tc;
-                    }
-                    else if (!merged[tr][tc] &&
+                    } else if (!merged[tr][tc] &&
                             grid[tr][tc].getValue() == tile.getValue()) {
 
                         grid[tr][tc].setValue(tile.getValue() * 2);
@@ -104,8 +104,7 @@ public class Board {
                         mergedThisTile = true;
                         moved = true;
                         break;
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }
@@ -123,10 +122,21 @@ public class Board {
         return moved;
     }
 
-    public boolean moveLeft()  { return move(0, -1); }
-    public boolean moveRight() { return move(0,  1); }
-    public boolean moveUp()    { return move(-1, 0); }
-    public boolean moveDown()  { return move(1,  0); }
+    public boolean moveLeft() {
+        return move(0, -1);
+    }
+
+    public boolean moveRight() {
+        return move(0, 1);
+    }
+
+    public boolean moveUp() {
+        return move(-1, 0);
+    }
+
+    public boolean moveDown() {
+        return move(1, 0);
+    }
 
     public boolean canMove() {
         for (int r = 0; r < SIZE; r++)
@@ -147,10 +157,14 @@ public class Board {
     }
 
     public boolean hasWon() {
+        if (winReached) return false;
+
         for (int r = 0; r < SIZE; r++)
             for (int c = 0; c < SIZE; c++)
-                if (grid[r][c] != null && grid[r][c].getValue() == 2048)
+                if (grid[r][c] != null && grid[r][c].getValue() == 2048) {
+                    winReached = true;
                     return true;
+                }
         return false;
     }
 
@@ -160,7 +174,17 @@ public class Board {
                 grid[r][c] = null;
 
         score = 0;
+        winReached = false;
+
         spawnTile();
         spawnTile();
+
+
+        grid[0][0] = new Tile(1024);
+        grid[0][1] = new Tile(1024);
+
+        //grid[3][2] = new Tile(1024);
+        //grid[3][3] = new Tile(1024);
+
     }
 }
