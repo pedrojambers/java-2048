@@ -1,12 +1,2 @@
 Pedro;12345
 Ana;9876
-claudio;2140
-TESTE;2048
-TESTE;2664
-TESTE;2048
-joao;3228
-joao;2048
-joao;2048
-Marcia;1284
-uyrtxhjfg;2048
-uyrtxhjfg;8980
