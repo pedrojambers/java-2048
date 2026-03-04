@@ -1,0 +1,51 @@
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", "System";
+    -fx-background-color: #faf8ef; /* light page background */
+}
+
+.grid-pane {
+    -fx-padding: 18; /* padding around the board */
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+}
+
+.tile-bg {
+}
+
+.label {
+    -fx-font-weight: bold;
+}
+
+.menu-button {
+    -fx-background-color: #d9b645;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20 10 20;
+}
+
+.menu-button:hover {
+    -fx-background-color: #cca939;
+}
+
+.menu-button:pressed {
+    -fx-background-color: #b3922b;
+}
+
+.quit-button {
+    -fx-background-color: #f59563;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20 10 20;
+}
+
+.quit-button:hover {
+    -fx-background-color: #f67c5f;
+}
+
+.quit-button:pressed {
+    -fx-background-color: #f57253;
+}
