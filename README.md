@@ -8,7 +8,7 @@ An implementation of the classic **2048** game, built with Java 21 and JavaFX, f
 
 ## Gameplay preview
 
-<ins>**Use W - A - S - D to move the tiles**</ins>
+**Use <ins>W - A - S - D</ins> to move the tiles**
 
 ![Image](https://github.com/user-attachments/assets/062c1a51-4fc8-4ffe-9251-66818e105633)
 
